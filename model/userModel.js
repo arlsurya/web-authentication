@@ -5,12 +5,21 @@ const userSchema = new mongoose.Schema({
     username: { type: String, required: true },
     email: { type: String, required: true },
     password: { type: String, required: true },
+    // passkey: { type: String },
     webAuthnCredentials: [{
-        credentialId: { type: String, required: true },
-        publicKey: { type: String, required: true },
-        userHandle: { type: String, required: true },
-        counter: { type: Number, required: true },
-        transports: [{ type: String }]
+        fmt: String,
+        counter: Number,
+        aaguid: String,
+        credentialID: String,
+        credentialPublicKey: [Number],
+        credentialType: { type: String, default: 'public-key' },
+        attestationObject: [Number],
+        userVerified: Boolean,
+        credentialDeviceType: String,
+        credentialBackedUp: Boolean,
+        origin: String,
+        rpID: String,
+
     }]
 });
 

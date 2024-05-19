@@ -16,6 +16,7 @@
     <button id="registerPasskey">Register Passkey</button>
     <button id="logout">Logout</button>
 
+    <script src="https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.umd.min.js"></script>
     <script>
         window.onload = async function () {
             const url = new URL(window.location);
@@ -29,15 +30,39 @@
 
             // Register passkey button click event
             document.querySelector('#registerPasskey').addEventListener('click', async () => {
-                const response = await fetch('/register-challenge', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ userId: userData.id })
-                });
-                const data = await response.json();
-                console.log('Challenge:', data);
+                try {
+                    const response = await fetch('/register-challenge', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ userId: userData._id })
+                    });
+                    const data = await response.json();
+                    console.log('Challenge:', data);
+                    const { options } = data;
+                    console.log(options);
+
+                    const authenticationResult = await SimpleWebAuthnBrowser.startRegistration({ ...options, });
+                    const res = await fetch('/register-verify', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            userId: userId,
+                            authResult: authenticationResult
+
+                        })
+                    });
+                    const resResult = await res.json();
+                    console.log(resResult);
+
+
+                } catch (error) {
+                    console.log(error);
+                }
+
             });
 
             // Logout button click event
