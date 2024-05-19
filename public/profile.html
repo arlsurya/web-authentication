@@ -4,11 +4,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Profile</title>
 </head>
 
 <body>
     <h1>Profile</h1>
+    <div>
+        <p><strong>Username:</strong> <span id="username"></span></p>
+        <p><strong>Email:</strong> <span id="email"></span></p>
+    </div>
+    <button id="registerPasskey">Register Passkey</button>
+    <button id="logout">Logout</button>
+
+    <script>
+        window.onload = async function () {
+            const url = new URL(window.location);
+            const userId = url.searchParams.get('userId');
+            // Fetch user data from the server
+            const response = await fetch(`/user?userId=${userId}`);
+            const userData = await response.json();
+            // Update the HTML with the user's information
+            document.querySelector('#username').innerText = userData.username;
+            document.querySelector('#email').innerText = userData.email;
+
+            // Register passkey button click event
+            document.querySelector('#registerPasskey').addEventListener('click', async () => {
+                const response = await fetch('/register-challenge', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId: userData.id })
+                });
+                const data = await response.json();
+                console.log('Challenge:', data);
+            });
+
+            // Logout button click event
+            document.querySelector('#logout').addEventListener('click', async (e) => {
+                e.preventDefault();
+                console.log('logout');
+                window.location.replace('http://localhost:3000/login');
+
+            });
+        }
+    </script>
 </body>
 
 </html>

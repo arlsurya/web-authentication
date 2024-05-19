@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'path';
+import morgan from 'morgan';
 import { fileURLToPath } from 'url';
 import connectToDatabase from './db.js';
 
@@ -12,6 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(morgan('dev'))
 app.use(express.json());
 
 app.use('/', apiRoutes);

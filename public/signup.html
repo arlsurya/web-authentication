@@ -4,11 +4,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <script src="https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.umd.min.js"></script>
+    <title>SignUp</title>
 </head>
 
 <body>
-    <h1>Signup</h1>
+
+    <form id="signup-form">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="email" name="email" placeholder="Email" required>
+
+        <input type="password" name="password" placeholder="Password" required>
+        <input type="submit" value="Submit">
+    </form>
+
+    <script>
+        const form = document.querySelector('#signup-form');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = form.username.value;
+            const password = form.password.value;
+            const email = form.email.value;
+
+            // Send a request to the server to handle the signup process
+            const response = await fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    email: email,
+                    password: password
+                })
+            });
+
+            // Parse the response and redirect to the profile page with the user ID
+            const data = await response.json();
+            if (data) {
+                const { id } = data;
+                window.location.replace(`http://localhost:3000/profile.html?userId=${id}`);
+            }
+  
+        });
+    </script>
+
 </body>
 
 </html>
