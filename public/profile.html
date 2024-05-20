@@ -43,7 +43,7 @@
                     const { options } = data;
                     console.log(options);
 
-                    const authenticationResult = await SimpleWebAuthnBrowser.startRegistration({ ...options, });
+                    const registrationResult = await SimpleWebAuthnBrowser.startRegistration(options);
                     const res = await fetch('/register-verify', {
                         method: 'POST',
                         headers: {
@@ -51,13 +51,17 @@
                         },
                         body: JSON.stringify({
                             userId: userId,
-                            authResult: authenticationResult
-
+                            authResult: registrationResult
                         })
                     });
                     const resResult = await res.json();
                     console.log(resResult);
 
+                    if (resResult.verified) {
+                        alert('Passkey registered successfully');
+                    } else {
+                        alert('Failed to register passkey');
+                    }
 
                 } catch (error) {
                     console.log(error);
@@ -70,7 +74,6 @@
                 e.preventDefault();
                 console.log('logout');
                 window.location.replace('http://localhost:3000/login');
-
             });
         }
     </script>

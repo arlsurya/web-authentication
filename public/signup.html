@@ -27,7 +27,6 @@
             const password = form.password.value;
             const email = form.email.value;
 
-            // Send a request to the server to handle the signup process
             const response = await fetch('/register', {
                 method: 'POST',
                 headers: {
@@ -42,11 +41,12 @@
 
             // Parse the response and redirect to the profile page with the user ID
             const data = await response.json();
+            console.log(data);
             if (data) {
                 const { id } = data;
                 window.location.replace(`http://localhost:3000/profile.html?userId=${id}`);
             }
-  
+
         });
     </script>
 

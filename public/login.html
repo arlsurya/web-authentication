@@ -4,11 +4,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Login</title>
 </head>
 
 <body>
     <h1>Login</h1>
+    <form id="loginForm">
+        <label for="userId">User ID:</label>
+        <input type="text" id="userId" name="userId" required>
+        <button type="submit">Login</button>
+    </form>
+    <div id="message"></div>
+
+    <script src="https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.umd.min.js"></script>
+
+    <script>
+        document.querySelector('#loginForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const userId = document.querySelector('#userId').value;
+
+            try {
+                // Fetch the login challenge from the server
+                const response = await fetch('/login-challenge', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId })
+                });
+
+                const challengeResult = await response.json();
+                const { options } = challengeResult;
+
+                // Perform WebAuthn authentication
+                const authenticationResult = await SimpleWebAuthnBrowser.startAuthentication(options);
+
+                // Verify the authentication result with the server
+                const verifyResponse = await fetch('/login-verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId, cred: authenticationResult })
+                });
+
+                const verifyResult = await verifyResponse.json();
+
+                if (verifyResult.success) {
+                    window.location.href = `/profile?userId=${userId}`;
+                } else {
+                    document.querySelector('#message').innerText = verifyResult.error || 'Login failed';
+                }
+
+            } catch (error) {
+                console.error('Error during login:', error);
+                document.querySelector('#message').innerText = 'An error occurred during login';
+            }
+        });
+    </script>
 </body>
 
 </html>
